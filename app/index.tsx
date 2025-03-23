@@ -10,7 +10,7 @@ const index = () => {
   useEffect(() => {
     setTimeout(() => {
       route.push("/(auth)/welcome");
-    }, 200);
+    }, 1000);
   }, []);
 
   return (

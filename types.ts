@@ -39,6 +39,7 @@ export type TypoProps = {
   children: any | null;
   style?: TextStyle;
   textProps?: TextProps;
+  className?: string;
 };
 
 export type IconComponent = React.ComponentType<{

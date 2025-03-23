@@ -30,7 +30,7 @@ module.exports = {
           900: "#171717",
         },
       },
-      spacing: {
+      space: {
         x: {
           3: "3px",
           5: "5px",
