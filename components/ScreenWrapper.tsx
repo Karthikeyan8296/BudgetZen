@@ -6,8 +6,7 @@ import { colors } from "@/constants/theme";
 const { height } = Dimensions.get("window");
 
 const ScreenWrapper = ({ style, children, className }: ScreenWrapperProps) => {
-  let paddingTop =
-    Platform.OS === "ios" ? height * 0.06 : StatusBar.currentHeight || 24;
+  let paddingTop = Platform.OS === "android" ? height * 0.015 : 0;
   return (
     <View
       className={className}
