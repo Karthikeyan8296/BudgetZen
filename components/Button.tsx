@@ -14,7 +14,7 @@ const Button = ({
   if (loading) {
     return (
       <View
-        className="bg-primary, rounded-15 items-center justify-center"
+        className="bg-primary rounded-15 items-center justify-center"
         style={[styles.button, style, { backgroundColor: "transparent" }]}
       >
         {/* Loading component */}
@@ -26,7 +26,7 @@ const Button = ({
       <TouchableOpacity
         onPress={onPress}
         style={[styles.button, style]}
-        className="bg-primary, rounded-15 items-center justify-center"
+        className="bg-primary rounded-15 items-center justify-center"
       >
         {children}
       </TouchableOpacity>

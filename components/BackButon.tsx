@@ -6,11 +6,11 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { verticalScale } from "@/utils/styling";
 import { colors, radius } from "@/constants/theme";
 
-const BackButon = ({ style, iconSize = 26, className }: BackButtonProps) => {
+const BackButon = ({ style, iconSize = 24, className }: BackButtonProps) => {
   const router = useRouter();
   return (
     <TouchableOpacity
-      className={`flex-row px-4 items-center ${className}`}
+      className={`self-start bg-neutral-800 rounded-12 px-[16px] py-2 ${className}`}
       onPress={() => router.back()}
       style={[style]}
     >
