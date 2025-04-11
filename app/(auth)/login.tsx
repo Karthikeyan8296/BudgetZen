@@ -9,6 +9,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Button from "@/components/Button";
 import { useRouter } from "expo-router";
+import { useAuth } from "@/context/authContext";
 
 const Login = () => {
   const router = useRouter();
@@ -18,14 +19,22 @@ const Login = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const { login: userLogin } = useAuth();
+
   const handleSubmit = async () => {
     //validation
     if (!emailRef.current || !passwordRef.current) {
       Alert.alert("Login", "Please fill all the fields");
     }
-    console.log("email: ", emailRef.current);
-    console.log("password: ", passwordRef.current);
-    console.log("good to go");
+
+    setIsLoading(true);
+    const res = await userLogin(emailRef.current, passwordRef.current);
+    setIsLoading(false);
+
+    console.log("login response: ", res);
+    if (!res.success) {
+      Alert.alert("login failed", res.msg);
+    }
   };
 
   return (

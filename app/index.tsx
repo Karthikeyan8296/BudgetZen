@@ -7,11 +7,11 @@ import ScreenWrapper from "@/components/ScreenWrapper";
 //splash screen
 const index = () => {
   const route = useRouter();
-  useEffect(() => {
-    setTimeout(() => {
-      route.push("/(auth)/welcome");
-    }, 2000);
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     route.push("/(auth)/welcome");
+  //   }, 2000);
+  // }, []);
 
   return (
     <ScreenWrapper className="flex-1 items-center justify-center bg-neutral-900">

@@ -10,6 +10,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Button from "@/components/Button";
 import { useRouter } from "expo-router";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { useAuth } from "@/context/authContext";
 
 const Register = () => {
   const router = useRouter();
@@ -18,17 +19,30 @@ const Register = () => {
   const emailRef = useRef("");
   const passwordRef = useRef("");
 
+  //renaming the register as registerUser
+  const { register: registerUser } = useAuth();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
     //validation
     if (!emailRef.current || !passwordRef.current || !nameRef.current) {
       Alert.alert("Sign up", "Please fill all the fields");
+      return;
     }
-    console.log("name: ", nameRef.current);
-    console.log("email: ", emailRef.current);
-    console.log("password: ", passwordRef.current);
-    console.log("good to go");
+
+    setIsLoading(true);
+    const res = await registerUser(
+      nameRef.current,
+      emailRef.current,
+      passwordRef.current
+    );
+    setIsLoading(false);
+
+    console.log("register response: ", res);
+    if (!res.success) {
+      Alert.alert("Sign up failed", res.msg);
+    }
   };
 
   return (
@@ -79,7 +93,7 @@ const Register = () => {
           </Typo>
           <Pressable onPress={() => router.push("/login")}>
             <Typo size={14} fontWeight={"500"} color={colors.primary}>
-              Sign in
+              Login
             </Typo>
           </Pressable>
         </View>
