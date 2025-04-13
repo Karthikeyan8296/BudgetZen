@@ -11,6 +11,7 @@ import Button from "@/components/Button";
 import { useRouter } from "expo-router";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useAuth } from "@/context/authContext";
+import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 
 const Register = () => {
   const router = useRouter();
@@ -27,7 +28,12 @@ const Register = () => {
   const handleSubmit = async () => {
     //validation
     if (!emailRef.current || !passwordRef.current || !nameRef.current) {
-      Alert.alert("Sign up", "Please fill all the fields");
+      // Alert.alert("Sign up", "Please fill all the fields");
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Sign up",
+        textBody: "Please fill all the fields",
+      });
       return;
     }
 
@@ -41,7 +47,12 @@ const Register = () => {
 
     console.log("register response: ", res);
     if (!res.success) {
-      Alert.alert("Sign up failed", res.msg);
+      // Alert.alert("Sign up failed", res.msg);
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Sign up failed",
+        textBody: res.msg,
+      });
     }
   };
 

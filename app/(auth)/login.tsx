@@ -10,6 +10,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Button from "@/components/Button";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/authContext";
+import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 
 const Login = () => {
   const router = useRouter();
@@ -24,7 +25,13 @@ const Login = () => {
   const handleSubmit = async () => {
     //validation
     if (!emailRef.current || !passwordRef.current) {
-      Alert.alert("Login", "Please fill all the fields");
+      // Alert.alert("Login", "Please fill all the fields");
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Login",
+        textBody: "Please fill all the fields",
+      });
+      return;
     }
 
     setIsLoading(true);
@@ -33,7 +40,12 @@ const Login = () => {
 
     console.log("login response: ", res);
     if (!res.success) {
-      Alert.alert("login failed", res.msg);
+      // Alert.alert("login failed", res.msg);
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Login failed",
+        textBody: res.msg,
+      });
     }
   };
 

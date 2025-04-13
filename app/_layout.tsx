@@ -1,6 +1,7 @@
 import React from "react";
 import { Stack } from "expo-router";
 import { AuthProvider } from "@/context/authContext";
+import { AlertNotificationRoot } from "react-native-alert-notification";
 
 const StackLayout = () => {
   return (
@@ -19,7 +20,9 @@ const StackLayout = () => {
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <StackLayout />
+      <AlertNotificationRoot>
+        <StackLayout />
+      </AlertNotificationRoot>
     </AuthProvider>
   );
 }
