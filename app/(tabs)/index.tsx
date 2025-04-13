@@ -5,6 +5,7 @@ import Typo from "@/components/Typo";
 import { signOut } from "firebase/auth";
 import { auth } from "@/config/firebase";
 import { useAuth } from "@/context/authContext";
+import ScreenWrapper from "@/components/ScreenWrapper";
 
 const Home = () => {
   const { user } = useAuth();
@@ -14,9 +15,9 @@ const Home = () => {
   console.log("user: ", user);
 
   return (
-    <View>
-      <Text>Home</Text>
-      <Typo color="black" fontWeight={"600"}>
+    <ScreenWrapper>
+      <Text className="text-white">Home</Text>
+      <Typo color="white" fontWeight={"600"}>
         {user?.name}
       </Typo>
       <Button onPress={handleLogout}>
@@ -24,7 +25,7 @@ const Home = () => {
           Log out
         </Typo>
       </Button>
-    </View>
+    </ScreenWrapper>
   );
 };
 
