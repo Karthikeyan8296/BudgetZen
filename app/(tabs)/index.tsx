@@ -12,6 +12,7 @@ const Home = () => {
   const handleLogout = async () => {
     await signOut(auth);
   };
+
   console.log("user: ", user);
 
   return (

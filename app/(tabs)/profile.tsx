@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import React from "react";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import { colors, spacingX, spacingY } from "@/constants/theme";
@@ -11,9 +11,15 @@ import { Image } from "expo-image";
 import { getProfileImage } from "@/services/imageService";
 import { accountOptionType } from "@/types";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import Animated, { FadeInDown } from "react-native-reanimated";
+import { ALERT_TYPE, Toast } from "react-native-alert-notification";
+import { signOut } from "firebase/auth";
+import { auth } from "@/config/firebase";
+import { useRouter } from "expo-router";
 
 const Profile = () => {
   const { user } = useAuth();
+  const router = useRouter();
 
   const accountOptions: accountOptionType[] = [
     {
@@ -41,6 +47,42 @@ const Profile = () => {
       // routeName: "/(models)/profileModel",
     },
   ];
+
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
+
+  const showLogoutAlert = () => {
+    Alert.alert("Confirm Logout", "Are you sure want to logout?", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+      {
+        text: "OK",
+        onPress: () => {
+          handleLogout();
+          Toast.show({
+            type: ALERT_TYPE.SUCCESS,
+            title: "Logout",
+            textBody: "Successfully logged out",
+          });
+        },
+        style: "destructive",
+      },
+    ]);
+  };
+
+  //handlePress function for account options
+  const handlePress = async (item: accountOptionType) => {
+    if (item.title == "Logout") {
+      showLogoutAlert();
+    }
+    if (item.routeName) {
+      router.push(item.routeName);
+    }
+  };
 
   return (
     <ScreenWrapper>
@@ -83,8 +125,17 @@ const Profile = () => {
         <View style={{ marginTop: spacingY._35 }}>
           {accountOptions.map((item, index) => {
             return (
-              <View style={{ marginBottom: spacingY._35 }}>
-                <TouchableOpacity className="flex-row items-center gap-x-3">
+              <Animated.View
+                key={index.toString()}
+                entering={FadeInDown.delay(index * 50)
+                  .springify()
+                  .damping(14)}
+                style={{ marginBottom: spacingY._25 }}
+              >
+                <TouchableOpacity
+                  className="flex-row items-center gap-x-3"
+                  onPress={() => handlePress(item)}
+                >
                   {/* Icon View */}
                   <View
                     className="bg-neutral-700 items-center justify-center rounded-15"
@@ -112,7 +163,7 @@ const Profile = () => {
                     color={colors.neutral350}
                   />
                 </TouchableOpacity>
-              </View>
+              </Animated.View>
             );
           })}
         </View>
