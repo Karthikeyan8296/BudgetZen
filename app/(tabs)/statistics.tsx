@@ -5,7 +5,7 @@ import ScreenWrapper from "@/components/ScreenWrapper";
 const Statistics = () => {
   return (
     <ScreenWrapper>
-      <Text className="text-white">Statistics</Text>
+      <Text className="text-white">Statistics screen</Text>
     </ScreenWrapper>
   );
 };
