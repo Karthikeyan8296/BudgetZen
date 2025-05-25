@@ -14,14 +14,14 @@ const StackLayout = () => {
       <Stack.Screen name="(auth)/register" /> */}
 
       {/* To make it as model, we need to define in this stack */}
-      <Stack.Screen
+      {/* <Stack.Screen
         name="(models)/profileModel"
         options={{ presentation: "modal" }}
       />
       <Stack.Screen
         name="(models)/walletModel"
         options={{ presentation: "modal" }}
-      />
+      /> */}
     </Stack>
   );
 };

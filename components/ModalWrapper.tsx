@@ -2,6 +2,7 @@ import { View, Text, Platform } from "react-native";
 import React from "react";
 import { colors, spacingY } from "@/constants/theme";
 import { ModalWrapperProps } from "@/types";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const isIOS = Platform.OS === "ios";
 
@@ -11,7 +12,7 @@ const ModalWrapper = ({
   bg = colors.neutral900,
 }: ModalWrapperProps) => {
   return (
-    <View
+    <SafeAreaView
       className="flex-1"
       style={[
         {
@@ -23,7 +24,7 @@ const ModalWrapper = ({
       ]}
     >
       {children}
-    </View>
+    </SafeAreaView>
   );
 };
 
