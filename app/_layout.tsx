@@ -18,6 +18,10 @@ const StackLayout = () => {
         name="(models)/profileModel"
         options={{ presentation: "modal" }}
       />
+      <Stack.Screen
+        name="(models)/walletModel"
+        options={{ presentation: "modal" }}
+      />
     </Stack>
   );
 };

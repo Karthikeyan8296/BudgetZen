@@ -10,6 +10,10 @@ export const uploadFileCloudinary = async (
   folderName: string
 ): Promise<ResponseType> => {
   try {
+    if (!file) {
+      return { success: true, data: null };
+    }
+
     if (typeof file == "string") {
       return { success: true, data: file };
     }
@@ -43,10 +47,18 @@ export const uploadFileCloudinary = async (
   }
 };
 
-//get the images service
+//get the profile images service
 export const getProfileImage = (file: any) => {
   if (file && typeof file == "string") return file;
   if (file && typeof file == "object") return file.uri;
 
   return require("@/assets/images/defaultAvatar.png");
+};
+
+//get the wallet images service
+export const getFilePath = (file: any) => {
+  if (file && typeof file == "string") return file;
+  if (file && typeof file == "object") return file.uri;
+
+  return null;
 };
