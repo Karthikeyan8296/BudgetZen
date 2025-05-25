@@ -1,16 +1,45 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import React from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+} from "react-native";
+import React, { use } from "react";
 import ScreenWrapper from "@/components/ScreenWrapper";
-import { colors, radius, spacingX } from "@/constants/theme";
+import { colors, radius, spacingX, spacingY } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
 import Typo from "@/components/Typo";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
+import useFetchData from "@/hooks/useFetchData";
+import { WalletType } from "@/types";
+import { useAuth } from "@/context/authContext";
+import { orderBy, where } from "firebase/firestore";
+import LoadingComponent from "@/components/LoadingComponent";
+import WalletListItem from "@/components/WalletListItem";
 
 const Wallet = () => {
-  const getTotalBalance = () => {
-    return 356;
-  };
+  const { user } = useAuth();
+
+  // Fetch wallets data
+  // Using a custom hook to fetch data from Firestore
+  const {
+    data: walletsData,
+    error,
+    loading,
+  } = useFetchData<WalletType>("wallets", [
+    where("uid", "==", user?.uid),
+    orderBy("created", "desc"),
+  ]);
+
+  const getTotalBalance = () =>
+    walletsData.reduce((total, item) => {
+      total = total + (item.amount || 0);
+      return total;
+    }, 0);
+
+  console.log("walletsData", walletsData.length);
 
   const router = useRouter();
 
@@ -58,6 +87,17 @@ const Wallet = () => {
             </TouchableOpacity>
           </View>
           {/* Wallets List */}
+
+          {loading && <LoadingComponent color={colors.green} />}
+          <FlatList
+            data={walletsData}
+            renderItem={({ item, index }) => {
+              return (
+                <WalletListItem item={item} index={index} router={router} />
+              );
+            }}
+            contentContainerStyle={styles.listStyle}
+          />
         </View>
       </View>
     </ScreenWrapper>
@@ -65,3 +105,10 @@ const Wallet = () => {
 };
 
 export default Wallet;
+
+const styles = StyleSheet.create({
+  listStyle: {
+    paddingVertical: spacingY._25,
+    paddingTop: spacingY._15,
+  },
+});

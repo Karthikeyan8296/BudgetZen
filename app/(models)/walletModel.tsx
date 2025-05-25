@@ -1,5 +1,5 @@
-import { View, StyleSheet, ScrollView } from "react-native";
-import React, { useState } from "react";
+import { View, StyleSheet, ScrollView, Alert } from "react-native";
+import React, { useEffect, useState } from "react";
 import ModalWrapper from "@/components/ModalWrapper";
 import Header from "@/components/Header";
 import BackButon from "@/components/BackButon";
@@ -11,9 +11,10 @@ import { UserDataType, WalletType } from "@/types";
 import Button from "@/components/Button";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import { useAuth } from "@/context/authContext";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import ImageUpload from "@/components/ImageUpload";
-import { createOrUpdateWallet } from "@/services/walletService";
+import { createOrUpdateWallet, deleteWallet } from "@/services/walletService";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const walletModel = () => {
   const { user, updateUserData } = useAuth();
@@ -26,6 +27,19 @@ const walletModel = () => {
 
   const [loading, setLaoding] = useState(false);
   const router = useRouter();
+
+  //get old wallet data if we are editing
+  const oldWalletData: { name: string; image: string; id: string } =
+    useLocalSearchParams();
+
+  useEffect(() => {
+    if (oldWalletData?.id) {
+      setWallet({
+        name: oldWalletData?.name,
+        image: oldWalletData?.image,
+      });
+    }
+  }, []);
 
   const Submit = async () => {
     let { name, image } = wallet;
@@ -46,7 +60,10 @@ const walletModel = () => {
       uid: user?.uid,
     };
 
-    //todo: include wallet id if it is already present(update)
+    //wallet delete
+    if (oldWalletData?.id) {
+      data.id = oldWalletData?.id; // if we are editing, we need to pass the id
+    }
 
     setLaoding(true);
     const res = await createOrUpdateWallet(data);
@@ -70,11 +87,54 @@ const walletModel = () => {
     }
   };
 
+  const onDeleteWallet = async () => {
+    if (!oldWalletData?.id) return;
+    setLaoding(true);
+    const res = await deleteWallet(oldWalletData?.id);
+    setLaoding(false);
+
+    if (res.success) {
+      router.back();
+      Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        title: "Wallet",
+        textBody: res.msg,
+      });
+    } else {
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Wallet",
+        textBody: res.msg,
+      });
+    }
+  };
+
+  const showDeleteAlert = () => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this wallet? \nThis action will remove all the transactions related to the wallet",
+      [
+        {
+          text: "Cancel",
+          onPress: () => {
+            console.log("cancelled delete");
+          }, // Cancel button;
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: () => onDeleteWallet(),
+          style: "destructive", // Destructive button
+        },
+      ]
+    );
+  };
+
   return (
     <ModalWrapper>
       <View className="flex-1 justify-between px-5">
         <Header
-          title="New Wallet"
+          title={oldWalletData?.id ? "Edit Wallet" : "Add Wallet"}
           leftIcon={<BackButon />}
           style={{ marginBottom: spacingY._10 }}
         />
@@ -117,9 +177,19 @@ const walletModel = () => {
 
       {/* Footer */}
       <View style={style.footer}>
+        {oldWalletData?.id && !loading && (
+          <Button
+            style={{ backgroundColor: colors.rose }}
+            onPress={showDeleteAlert}
+          >
+            <View className="m-5">
+              <Ionicons name="trash" size={24} color={colors.white} />
+            </View>
+          </Button>
+        )}
         <Button loading={loading} onPress={Submit} style={{ flex: 1 }}>
           <Typo color="black" fontWeight={"600"}>
-            Add Wallet
+            {oldWalletData?.id ? "Update Wallet" : "Add Wallet"}
           </Typo>
         </Button>
       </View>
