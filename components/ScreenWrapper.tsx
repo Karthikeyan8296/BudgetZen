@@ -8,6 +8,9 @@ const { height } = Dimensions.get("window");
 
 const ScreenWrapper = ({ style, children, className }: ScreenWrapperProps) => {
   let paddingTop = Platform.OS === "android" ? height * 0.0005 : 0;
+  //examples
+  let paddingTopIOS = Platform.OS === "ios" ? height * 0.06 : 50;
+  let paddingTopverion1 = Platform.OS === "ios" ? height * 0.06 : 0;
   return (
     <SafeAreaView
       className={className}
