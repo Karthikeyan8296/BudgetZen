@@ -21,7 +21,6 @@ export const updateUser = async (
           msg: imageUploadRes.msg || "Failed to upload image",
         };
       }
-
       //if image uploaded
       updatedDate.image = imageUploadRes.data;
     }

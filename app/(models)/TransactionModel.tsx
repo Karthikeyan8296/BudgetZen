@@ -27,6 +27,7 @@ import { expenseCategories, transactionTypes } from "@/constants/data";
 import useFetchData from "@/hooks/useFetchData";
 import { orderBy, where } from "firebase/firestore";
 import Input from "@/components/Input";
+import { createOrUpdateTransaction } from "@/services/transactionService";
 
 const TransactionModel = () => {
   const { user } = useAuth();
@@ -91,6 +92,20 @@ const TransactionModel = () => {
     };
 
     console.log("Transaction data: ", transactionData);
+
+    //todo: include transaction id for updating
+    setLaoding(true);
+    const res = await createOrUpdateTransaction(transactionData);
+    setLaoding(false);
+    if (res.success) {
+      router.back();
+    } else {
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Transaction",
+        textBody: res.msg,
+      });
+    }
   };
 
   const onDeleteWallet = async () => {
