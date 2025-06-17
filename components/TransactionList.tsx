@@ -8,6 +8,7 @@ import LoadingComponent from "./LoadingComponent";
 import { verticalScale } from "@/utils/styling";
 import { expenseCategories, incomeCategory } from "@/constants/data";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { Timestamp } from "firebase/firestore";
 
 const TransactionList = ({
   data,
@@ -60,10 +61,18 @@ const TransactionItem = ({
   index,
   handleClick,
 }: TransactionItemProps) => {
-  let category = incomeCategory;
-  // console.log(category);
+  let category =
+    item?.type == "income" ? incomeCategory : expenseCategories[item.category!];
 
   const IconComponent = category.icon;
+
+  //date util function
+  const date = (item?.date as Timestamp)
+    ?.toDate()
+    ?.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+    });
 
   return (
     <Animated.View
@@ -106,15 +115,19 @@ const TransactionItem = ({
             color={colors.neutral400}
             textProps={{ numberOfLines: 1 }}
           >
-            {item.description || "No description provided"}
+            {item?.description || "No description provided"}
           </Typo>
         </View>
         <View className="flex-col gap-1">
-          <Typo size={14} color={colors.primary} fontWeight={500}>
-            + $24
+          <Typo
+            size={14}
+            color={item?.type == "income" ? colors.primary : colors.rose}
+            fontWeight={500}
+          >
+            {`${item?.type == "income" ? "+ $" : "- $"}${item?.amount} `}
           </Typo>
           <Typo size={12} color={colors.neutral500} fontWeight={500}>
-            14 Jun
+            {date}
           </Typo>
         </View>
       </TouchableOpacity>
