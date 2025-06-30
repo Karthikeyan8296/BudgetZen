@@ -27,7 +27,10 @@ import { expenseCategories, transactionTypes } from "@/constants/data";
 import useFetchData from "@/hooks/useFetchData";
 import { orderBy, where } from "firebase/firestore";
 import Input from "@/components/Input";
-import { createOrUpdateTransaction } from "@/services/transactionService";
+import {
+  createOrUpdateTransaction,
+  deleteTransaction,
+} from "@/services/transactionService";
 
 const TransactionModel = () => {
   const { user } = useAuth();
@@ -47,18 +50,34 @@ const TransactionModel = () => {
   const router = useRouter();
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  //get old wallet data if we are editing
-  const oldTransaction: { name: string; image: string; id: string } =
-    useLocalSearchParams();
+  type paramType = {
+    id: string;
+    type: string;
+    amount: string;
+    category?: string;
+    date: string;
+    description?: string;
+    image?: any;
+    uid?: string;
+    walletId: string;
+  };
 
-  // useEffect(() => {
-  //   if (oldTransaction?.id) {
-  //     setTransaction({
-  //       name: oldTransaction?.name,
-  //       image: oldTransaction?.image,
-  //     });
-  //   }
-  // }, []);
+  //get old wallet data if we are editing
+  const oldTransaction: paramType = useLocalSearchParams();
+
+  useEffect(() => {
+    if (oldTransaction?.id) {
+      setTransaction({
+        type: oldTransaction?.type,
+        amount: Number(oldTransaction.amount),
+        description: oldTransaction.description || "",
+        category: oldTransaction.category || "",
+        date: new Date(oldTransaction.date),
+        walletId: oldTransaction.walletId,
+        image: oldTransaction?.image,
+      });
+    }
+  }, []);
 
   const onDateChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate || Transaction.date;
@@ -87,13 +106,14 @@ const TransactionModel = () => {
       date,
       description,
       walletId,
-      image,
+      image: image ? image : null,
       uid: user?.uid,
     };
 
     console.log("Transaction data: ", transactionData);
 
-    //todo: include transaction id for updating
+    if (oldTransaction?.id) transactionData.id = oldTransaction.id;
+
     setLaoding(true);
     const res = await createOrUpdateTransaction(transactionData);
     setLaoding(false);
@@ -109,30 +129,33 @@ const TransactionModel = () => {
   };
 
   const onDeleteWallet = async () => {
-    // if (!oldTransaction?.id) return;
-    // setLaoding(true);
-    // const res = await deleteWallet(oldTransaction?.id);
-    // setLaoding(false);
-    // if (res.success) {
-    //   router.back();
-    //   Toast.show({
-    //     type: ALERT_TYPE.SUCCESS,
-    //     title: "Wallet",
-    //     textBody: res.msg,
-    //   });
-    // } else {
-    //   Toast.show({
-    //     type: ALERT_TYPE.WARNING,
-    //     title: "Wallet",
-    //     textBody: res.msg,
-    //   });
-    // }
+    if (!oldTransaction?.id) return;
+    setLaoding(true);
+    const res = await deleteTransaction(
+      oldTransaction?.id,
+      oldTransaction.walletId
+    );
+    setLaoding(false);
+    if (res.success) {
+      router.back();
+      Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        title: "Transaction",
+        textBody: res.msg,
+      });
+    } else {
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Transaction",
+        textBody: res.msg,
+      });
+    }
   };
 
   const showDeleteAlert = () => {
     Alert.alert(
       "Confirm Delete",
-      "Are you sure you want to delete this wallet? \nThis action will remove all the transactions related to the wallet",
+      "Are you sure you want to delete this transaction?",
       [
         {
           text: "Cancel",

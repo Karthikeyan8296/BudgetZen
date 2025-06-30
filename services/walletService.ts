@@ -1,7 +1,17 @@
 import { ResponseType, WalletType } from "@/types";
 import { uploadFileCloudinary } from "./imageService";
 import { firestore } from "@/config/firebase";
-import { collection, deleteDoc, doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+  writeBatch,
+} from "firebase/firestore";
 
 export const createOrUpdateWallet = async (
   walletData: Partial<WalletType>
@@ -55,8 +65,43 @@ export const deleteWallet = async (walletId: string): Promise<ResponseType> => {
     const walletRef = doc(firestore, "wallets", walletId);
     await deleteDoc(walletRef);
 
-    //todo: delete all transactions related to this wallet
+    deleteTransactionByWalletId(walletId);
     return { success: true, msg: "Wallet deleted successfully" };
+  } catch (error: any) {
+    console.log("Got error in deleting wallet : ", error);
+    return { success: false, msg: error.message || "Could not delete wallet" };
+  }
+};
+
+export const deleteTransactionByWalletId = async (
+  walletId: string
+): Promise<ResponseType> => {
+  try {
+    let hasMoreTransaction = true;
+
+    while (hasMoreTransaction) {
+      const transactionQuery = query(
+        collection(firestore, "transaction"),
+        where("walletId", "==", walletId)
+      );
+
+      const transactionSnapshot = await getDocs(transactionQuery);
+      if (transactionSnapshot.size == 0) {
+        hasMoreTransaction = false;
+        break;
+      }
+
+      const batch = writeBatch(firestore);
+      transactionSnapshot.forEach((transactionDoc) => {
+        batch.delete(transactionDoc.ref);
+      });
+
+      await batch.commit();
+      console.log(
+        `${transactionSnapshot.size} transactions deleted in this batch`
+      );
+    }
+    return { success: true, msg: "All Transaction deleted successfully" };
   } catch (error: any) {
     console.log("Got error in deleting wallet : ", error);
     return { success: false, msg: error.message || "Could not delete wallet" };

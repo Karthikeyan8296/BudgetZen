@@ -1,6 +1,10 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
-import { TransactionItemProps, TransactionListType } from "@/types";
+import {
+  TransactionItemProps,
+  TransactionListType,
+  TransactionType,
+} from "@/types";
 import Typo from "./Typo";
 import { FlashList } from "@shopify/flash-list";
 import { colors, radius, spacingY } from "@/constants/theme";
@@ -9,6 +13,7 @@ import { verticalScale } from "@/utils/styling";
 import { expenseCategories, incomeCategory } from "@/constants/data";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { Timestamp } from "firebase/firestore";
+import { useRouter } from "expo-router";
 
 const TransactionList = ({
   data,
@@ -16,8 +21,22 @@ const TransactionList = ({
   loading,
   emptyListMessage,
 }: TransactionListType) => {
-  const handleClick = () => {
-    //open transaction details in model
+  const router = useRouter();
+  const handleClick = (item: TransactionType) => {
+    router.push({
+      pathname: "/(models)/TransactionModel",
+      params: {
+        id: item?.id,
+        type: item?.type,
+        amount: item?.amount?.toString(),
+        category: item?.category,
+        date: (item.date as Timestamp)?.toDate()?.toISOString(),
+        description: item?.description,
+        image: item?.image,
+        uid: item.uid,
+        walletId: item?.walletId,
+      },
+    });
   };
   return (
     <View className="gap-5 mt-5">
@@ -81,7 +100,7 @@ const TransactionItem = ({
         .damping(14)}
     >
       <TouchableOpacity
-        onPress={handleClick(item)}
+        onPress={() => handleClick(item)}
         className="flex-row justify-between items-center 
       gap-3 mb-3 bg-neutral-800 p-4 rounded-2xl"
       >
